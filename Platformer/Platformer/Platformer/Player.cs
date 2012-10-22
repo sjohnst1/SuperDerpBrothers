@@ -54,6 +54,43 @@ namespace Platformer
 
         bool deathSoundPlaying = false;
         bool jumpSoundPlaying = false;
+
+        //0 is move left, 1 is move right, 2 is jump
+        bool[] actions = new bool[3];
+
+        #endregion
+
+        #region Properties
+
+        public bool[] Actions
+        {
+            get { return actions; }
+            set { actions = value; }
+        }
+
+        public bool MoveLeft
+        {
+            get { return actions[0]; }
+            set { actions[0] = value; }
+        }
+
+        public bool MoveRight
+        {
+            get { return actions[1]; }
+            set { actions[1] = value; }
+        }
+
+        public bool Jump
+        {
+            get { return actions[2]; }
+            set { actions[2] = value; }
+        }
+
+        public bool Dead
+        {
+            get { return Health <= 0; }
+        }
+
         #endregion
 
         #region Initialization
@@ -117,7 +154,8 @@ namespace Platformer
             if (invincibleTime > 0) invincibleTime -= elapsed;
             else invincibleTime = 0f;
 
-            if(Health > 0) HandleInput();
+            //if(Health > 0) HandleInput();
+            if (Health > 0) HandleNNInput();
 
             HandlePhysics(elapsed);
 
@@ -130,6 +168,7 @@ namespace Platformer
                     deathSoundPlaying = true;
                     deathSound.Play();
                 }
+                
             }
             else if (onGround)
             {
@@ -215,6 +254,22 @@ namespace Platformer
             if (xInput < 0) facingLeft = false;
             else facingLeft = true;
 
+        }
+
+        public void HandleNNInput()
+        {
+            if (MoveLeft) xInput = -1;
+            else if (MoveRight) xInput = 1;
+
+            isJumping = Jump;
+
+            if (xInput < 0) facingLeft = false;
+            else facingLeft = true;
+
+            //reset actions
+            MoveLeft = false;
+            MoveRight = false;
+            Jump = false;
         }
 
         #endregion

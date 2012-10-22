@@ -18,7 +18,7 @@ using Platformer.Controller;
 
 namespace Platformer
 {
-    enum GameState
+    public enum GameState
     {
         Start,
         Play,
@@ -59,6 +59,18 @@ namespace Platformer
         {
             get { return gameState; }
             set { gameState = value; }
+        }
+
+        public Player Player
+        {
+            get { return player; }
+            set { player = value; }
+        }
+
+        public Camera Camera
+        {
+            get { return camera; }
+            set { camera = value; }
         }
 
         #endregion
@@ -163,23 +175,26 @@ namespace Platformer
         protected override void Update(GameTime gameTime)
         {
             // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                this.Exit();
+            //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+            //    this.Exit();
 
             control.Update(gameTime);
+            if (control.StopGame) gameState = GameState.Start;
 
             switch (gameState)
             {
                 case GameState.Play:
 
-                    if (GamePad.GetState(PlayerIndex.One).Buttons.Start == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                    {
-                        gameState = GameState.Pause;
-                        return;
-                    }
+                    //if (GamePad.GetState(PlayerIndex.One).Buttons.Start == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                    //{
+                    //    gameState = GameState.Pause;
+                    //    return;
+                    //}
 
                     player.Update(gameTime);
                     camera.Update(gameTime);
+
+                    if (player.Dead) gameState = GameState.Lose;
 
                     //foreach (Enemy e in enemies)
                     //{
@@ -243,7 +258,7 @@ namespace Platformer
             else if(gameState == GameState.Start)
             {
                 spriteBatch.Begin();
-                spriteBatch.DrawString(spriteFont, "Press Enter, Space, or Start to begin", new Vector2(100, 200), Color.White);
+                spriteBatch.DrawString(spriteFont, "Start Game from Form Window", new Vector2(100, 200), Color.White);
                 spriteBatch.End();
             }
 

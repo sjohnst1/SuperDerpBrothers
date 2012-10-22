@@ -12,8 +12,13 @@ namespace Platformer.Controller
 
         int numGenerations;
         int levelSelect;
+
         int numWeights;
         int generationSize;
+
+        int inputWidth;
+        int inputHeight;
+        int hiddenNodes;
 
         int current = 0;
 
@@ -23,22 +28,43 @@ namespace Platformer.Controller
 
         #region Initialization
 
-        public ComputerManager(int g, int l)
+        public ComputerManager(int numGenerations, int levelSelect, string file)
         {
-            numGenerations = g;
-            levelSelect = l;
-
-            computers = new List<Computer>(generationSize);
-
             try
             {
-                using (StreamReader sr = new StreamReader("weightData.txt"))
+                using (StreamReader sr = new StreamReader(file))
                 {
                     string line = sr.ReadLine();
+                    
+                    //first line, input width
+                    inputWidth = Convert.ToInt32(line);
 
-                    //if we're gonna use header data to determine generation size, do it here
+                    line = sr.ReadLine();
+                    
+                    //second line, input height
+                    inputHeight = Convert.ToInt32(line);
 
-                    while (line != null)
+                    line = sr.ReadLine();
+
+                    //third line, number of hidden nodes
+                    hiddenNodes = Convert.ToInt32(line);
+
+                    numWeights = (inputWidth * inputHeight * hiddenNodes) + (3 * hiddenNodes);
+
+                    line = sr.ReadLine();
+
+                    //fourth line, number of rows in the file (generation size)
+                    generationSize = Convert.ToInt32(line);
+
+                    line = sr.ReadLine();
+
+                    computers = new List<Computer>(generationSize);
+
+                    //now get the weight strings
+                    //x counts the lines so we only get the number we expect
+                    int x = 0;
+
+                    while (line != null && x < generationSize)
                     {
                         string[] chunks = line.Split(',');
 
@@ -49,10 +75,10 @@ namespace Platformer.Controller
                             w[i] = Convert.ToInt32(chunks[i]);
                         }
 
-                        //make sure we have the same # of weights and scores
                         computers.Add(new Computer(w));
 
                         line = sr.ReadLine();
+                        x++;
                     }
                     
                 }
